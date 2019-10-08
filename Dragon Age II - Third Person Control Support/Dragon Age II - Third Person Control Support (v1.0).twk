@@ -1,0 +1,102 @@
+#General_Settings# = #
+
+	;Dragon Age II (v1.0) _ Third Person Control Support (Mouse Free Camera - Walk\Run Button - Auto Move)
+
+Mouse_Move_Remap := "On"		;Turn it "Off" if Mouse Movement Remapping is not required (Less CPU Usage)
+
+Mouse_Move_Remap_Speed := 100		;milliseconds (The lesser the number, higher CPU usage!)
+
+SendMode, Event  				;"Input" is the fastest mode but may not work in many games\apps! (Options: Event, Input, InputThenPlay, Play)
+
+S_offset_L := 2, S_offset_R := 2, S_offset_U := 2, S_offset_D := 2		;Screen Offset for screen edges detection (Turns "Auto_Center_Mouse" On)
+
+Auto_Center_Mouse_On_Screen_Edges := "On"
+
+# ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Condition_If# = #WinActive("Dragon Age II")#
+
+	;(Note) Title match mode is "Case Sensitive" by default!
+	;(Note) "Mouse_Movements_Remap" and "Hot_Keys" will only work if "Condition_If" is matched!
+
+#Auto_Execute_On_Load# = #On#
+
+  ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Mouse_Movements_Remap# = #
+
+	;{Blind} mode disables useful automatic tasks that sometimes are the sources of problems in some situations!
+
+if GetKeyState("RButton") = 0		;if logical "Mouse Right Button" is Up, send it Down 
+Send {Blind}{RButton Down}
+
+# ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Hot_Keys# = #
+
+	;"~" keeps the key original function
+	;"*" wildcard symbol, hotkeys are triggered even if modifiers keys such as "Ctrl", "alt", etc are being held down!
+
+~*Esc::Release_Mouse_Free_Camera()		;Keyboard "Esc" key
+
+~*RButton::				;Mouse "Right" Button
+if (Auto_Center_Mouse = "On")
+Release_Mouse_Free_Camera()
+return
+
+~*LButton::				;Mouse "Left" Button
+if (Auto_Center_Mouse = "On")
+Send {Blind}{r}				;"r" Attack closest target\enemy! _ Use Lower-Case "r" instead Upper-Case "R"! (Prevents "Send" command to trigger "Shift" key unnecessarily!)
+return
+
+*p::					;Keyboard "p" key toggles "Auto_Center_Mouse" On\Off _ Use lower-case "p" instead upper-case "P" because the latter requires "Shift + p" to be triggered!
+if (Auto_Center_Mouse != "On")
+{
+Auto_Center_Mouse := "On"
+Auto_Center_Mouse_On_Screen_Edges := "On"
+}
+else
+{
+Release_Mouse_Free_Camera()
+Auto_Center_Mouse_On_Screen_Edges := "Off"
+}
+return
+
+*RAlt::					;Keyboard "Right Alt" down key
+If (Run_Walk_Button != "Down")
+{
+Send {Blind}{NumpadDiv}			;NumpadDiv " / " is the default toggle walk\run key in game
+Run_Walk_Button := "Down"
+}
+return
+
+*RAlt Up::					;Keyboard "Right Alt" up key
+Send {Blind}{NumpadDiv}			;NumpadDiv " / " is the default toggle walk\run key in game
+Run_Walk_Button := "Up"
+return
+
+*o::					;Keyboard "O" key = Auto-Move On\Off _ Use lower-case "o" instead upper-case "O" because the latter requires "Shift + o" to be triggered!
+if (GetKeyState("w") = 0)			;if Logical\Virtual lower-case "w" key is up!
+Send {Blind}{w down}			;Use Lower-Case "w" instead Upper-Case "W"! (Prevents "Send" command to trigger "Shift" key unnecessarily!)
+else
+Send {Blind}{w up}				;Use Lower-Case "w" instead Upper-Case "W"! (Prevents "Send" command to trigger "Shift" key unnecessarily!)
+return
+
+Release_Mouse_Free_Camera()
+{
+Global Auto_Center_Mouse
+
+Auto_Center_Mouse := "Off"
+
+Send {Blind}{RButton Up}			;{Blind} mode disables useful automatic tasks that sometimes are the sources of problems in some situations!
+}
+
+# ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+;<User_Script> ------ Write any code below this line (Optional) ------
+
+	;from here, "#" does not need to be pos-escaped with "_" because "#_" represents literal "#_" instead literal "#"
+
+Gui, Add, Link, x175, % "<a href=""https://coolgamestools.blogspot.com/2019/10/dragon-age-ii-third-person-control.html"">Last Configuration</a>"
+
+gui, show, AutoSize
